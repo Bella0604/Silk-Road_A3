@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fragments of the Silk Road</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main class="app">
+  <section class="intro" id="intro">
+    <p class="eyebrow">OART1013 / Browser-based Interactive Prototype</p>
+    <h1>Fragments of the Silk Road</h1>
+    <p>Drag broken fragments together to recover artifacts. Then connect the recovered objects to illuminate the Silk Road.</p>
+    <button id="beginBtn">Begin reconstruction</button>
+  </section>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow" id="phaseLabel">Phase 1 / Excavation Puzzle</p>
+      <h2 id="mainTitle">Recover the Broken Artifacts</h2>
+    </div>
+    <div class="progress">
+      <span id="progressText">0 / 6 artifacts recovered</span>
+      <div class="bar"><div id="progressFill"></div></div>
+    </div>
+  </header>
+
+  <div class="instruction" id="instruction">
+    <strong>Step 1:</strong> Drag two matching broken fragments together. Correct fragments will glow and merge into a recovered artifact.
+  </div>
+
+  <section class="excavation" id="excavation">
+    <div class="dust"></div>
+    <p class="sceneLabel">Excavation field / scattered historical fragments</p>
+
+    <div class="piece left" data-artifact="spices" data-side="left" style="left:16%;top:33%;--img:url('assets/spices.png')"></div>
+    <div class="piece right" data-artifact="spices" data-side="right" style="left:32%;top:70%;--img:url('assets/spices.png')"></div>
+
+    <div class="piece left" data-artifact="coin" data-side="left" style="left:42%;top:29%;--img:url('assets/coin.png')"></div>
+    <div class="piece right" data-artifact="coin" data-side="right" style="left:11%;top:72%;--img:url('assets/coin.png')"></div>
+
+    <div class="piece left" data-artifact="ceramic" data-side="left" style="left:73%;top:35%;--img:url('assets/ceramic.png')"></div>
+    <div class="piece right" data-artifact="ceramic" data-side="right" style="left:86%;top:70%;--img:url('assets/ceramic.png')"></div>
+
+    <div class="piece left" data-artifact="silk" data-side="left" style="left:62%;top:77%;--img:url('assets/silk.png')"></div>
+    <div class="piece right" data-artifact="silk" data-side="right" style="left:56%;top:38%;--img:url('assets/silk.png')"></div>
+
+    <div class="piece left" data-artifact="manuscript" data-side="left" style="left:26%;top:43%;--img:url('assets/manuscript.png')"></div>
+    <div class="piece right" data-artifact="manuscript" data-side="right" style="left:49%;top:70%;--img:url('assets/manuscript.png')"></div>
+
+    <div class="piece left" data-artifact="compass" data-side="left" style="left:83%;top:23%;--img:url('assets/compass.png')"></div>
+    <div class="piece right" data-artifact="compass" data-side="right" style="left:69%;top:58%;--img:url('assets/compass.png')"></div>
+
+    <div class="collection" id="collection">
+      <p>Recovered collection</p>
+    </div>
+  </section>
+
+  <section class="mapScene" id="mapScene">
+    <img class="map" src="assets/silk-road-map.png" alt="Silk Road map">
+
+    <svg class="routes" viewBox="0 0 1000 520" preserveAspectRatio="none">
+      <path id="route1" d="M760 230 C700 215 650 210 595 235" />
+      <path id="route2" d="M595 235 C535 255 485 275 430 275" />
+      <path id="route3" d="M430 275 C365 285 310 300 250 310" />
+      <path id="route4" d="M250 310 C190 315 150 305 115 280" />
+      <path id="route5" d="M115 280 C90 250 70 225 55 195" />
+    </svg>
+
+    <div class="node" style="left:76%;top:45%;"><span>Chang'an</span></div>
+    <div class="node" style="left:59%;top:48%;"><span>Dunhuang</span></div>
+    <div class="node" style="left:43%;top:54%;"><span>Samarkand</span></div>
+    <div class="node" style="left:25%;top:61%;"><span>Persia</span></div>
+    <div class="node" style="left:12%;top:55%;"><span>Byzantium</span></div>
+    <div class="node" style="left:5%;top:37%;"><span>Mediterranean</span></div>
+
+    <div class="artifact" id="spices" data-name="spices" style="left:18%;top:24%;"><img src="assets/spices.png"><span>Spices</span></div>
+    <div class="artifact" id="coin" data-name="coin" style="left:18%;top:77%;"><img src="assets/coin.png"><span>Coin</span></div>
+    <div class="artifact" id="ceramic" data-name="ceramic" style="left:74%;top:75%;"><img src="assets/ceramic.png"><span>Ceramic</span></div>
+    <div class="artifact" id="silk" data-name="silk" style="left:49%;top:79%;"><img src="assets/silk.png"><span>Silk</span></div>
+    <div class="artifact" id="manuscript" data-name="manuscript" style="left:13%;top:34%;"><img src="assets/manuscript.png"><span>Manuscript</span></div>
+    <div class="artifact" id="compass" data-name="compass" style="left:84%;top:27%;"><img src="assets/compass.png"><span>Compass</span></div>
+  </section>
+
+  <section class="scroll" id="scroll">
+    <button class="close" id="closeScroll">×</button>
+    <p id="scrollKicker" class="scrollKicker">Historical connection</p>
+    <h3 id="scrollTitle">Economic Exchange</h3>
+    <p id="scrollText"></p>
+    <button class="continueBtn" id="continueBtn">Continue</button>
+  </section>
+
+  <section class="final cinematicFinal" id="final">
+    <div class="filmGrain"></div>
+    <div class="finalGlow"></div>
+    <div class="finalLine"></div>
+
+    <div class="cinematicText">
+      <p class="finalSmall" id="finalSmall">The network is fully illuminated.</p>
+      <h2 id="finalTitle">Fragments become routes.</h2>
+      <p id="finalBody"></p>
+      <span id="finalTag">Reconstructed through touch.</span>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
