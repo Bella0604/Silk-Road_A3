@@ -1,425 +1,460 @@
-const intro = document.getElementById("intro");
-const beginBtn = document.getElementById("beginBtn");
-const excavation = document.getElementById("excavation");
-const collection = document.getElementById("collection");
-const mapScene = document.getElementById("mapScene");
-const instruction = document.getElementById("instruction");
-const phaseLabel = document.getElementById("phaseLabel");
-const mainTitle = document.getElementById("mainTitle");
-const progressText = document.getElementById("progressText");
-const progressFill = document.getElementById("progressFill");
-const scroll = document.getElementById("scroll");
-const closeScroll = document.getElementById("closeScroll");
-const continueBtn = document.getElementById("continueBtn");
-const scrollKicker = document.getElementById("scrollKicker");
-const scrollTitle = document.getElementById("scrollTitle");
-const scrollText = document.getElementById("scrollText");
-const final = document.getElementById("final");
-const finalSmall = document.getElementById("finalSmall");
-const finalTitle = document.getElementById("finalTitle");
-const finalBody = document.getElementById("finalBody");
-const finalTag = document.getElementById("finalTag");
+// Silk Road Reconstructed
+// OART1013 Interactive Media
+//
+// This project explores how drag interaction can support
+// historical learning through reconstruction, discovery
+// and connection.
+//
+// Context:
+// Silk Road exchange network
+//
+// Chosen Action:
+// Drag
+//
+// Design Goal:
+// Encourage users to learn through interaction
+// rather than simply reading information.
+// js for assignment
 
-let phase = "puzzle";
-let current = null;
-let offsetX = 0;
-let offsetY = 0;
-let recovered = 0;
-let connectionIndex = 0;
-let audio = null;
+var startPage = document.getElementById("startPage");
+var startBtn = document.getElementById("startBtn");
+var dig = document.getElementById("digArea");
+var tray = document.getElementById("tray");
+var theMap = document.getElementById("mapBox");
+var hint = document.getElementById("hint");
+var lblPart = document.getElementById("lbl_part");
+var h2title = document.getElementById("bigTitle");
+var progTxt = document.getElementById("txt_prog");
+var bar = document.getElementById("progInner");
+var popup = document.getElementById("popup");
+var btnClose = document.getElementById("btn_close");
+var btnOk = document.getElementById("btn_ok");
+var popSub = document.getElementById("popup_sub");
+var popHead = document.getElementById("popup_h");
+var popMsg = document.getElementById("popup_p");
+var endDiv = document.getElementById("screen_end");
+var t1 = document.getElementById("end_line1");
+var t2 = document.getElementById("end_h");
+var t3 = document.getElementById("end_p");
+var t4 = document.getElementById("end_footer");
+var leftArrow = document.getElementById("btn_left");
+var rightArrow = document.getElementById("btn_right");
+var restartBtn = document.getElementById("restartBtn");
 
-const recoveredSet = new Set();
-const homePositions = {};
+var whichPart = 1;
+var thing = null;
+var xx = 0;
+var yy = 0;
+var num = 0;
+var n = 0;
+var s = 0;
+var oldPos = {};
+var got = [];
 
-const pairs = [
-  {
-    a:"spices",
-    b:"coin",
-    route:"route1",
-    label:"Spices + Coin",
-    kicker:"Connection 1 / Economic Exchange",
-    title:"Economic Exchange",
-    text:"Spices moved across deserts and mountain corridors because they were rare, valuable and desired. Coins made this movement measurable. Together, they show how local markets became connected to a wider world of exchange."
-  },
-  {
-    a:"coin",
-    b:"ceramic",
-    route:"route2",
-    label:"Coin + Ceramic",
-    kicker:"Connection 2 / Trade Networks",
-    title:"Trade Networks",
-    text:"Ceramics produced in China travelled far beyond their place of origin. Coins represent the commercial systems that allowed merchants, workshops and distant consumers to become part of the same trading network."
-  },
-  {
-    a:"ceramic",
-    b:"silk",
-    route:"route3",
-    label:"Ceramic + Silk",
-    kicker:"Connection 3 / Cultural Exchange",
-    title:"Cultural Exchange",
-    text:"Objects carried more than material value. Ceramics and silk moved colours, symbols, techniques and tastes across borders. Through trade, visual culture travelled with the goods themselves."
-  },
-  {
-    a:"silk",
-    b:"manuscript",
-    route:"route4",
-    label:"Silk + Manuscript",
-    kicker:"Connection 4 / Spread of Ideas",
-    title:"Spread of Ideas",
-    text:"Manuscripts, religious texts and stories often travelled alongside luxury goods. The same routes that carried silk also helped Buddhism, Christianity, Islam, science and literature move between regions."
-  },
-  {
-    a:"manuscript",
-    b:"compass",
-    route:"route5",
-    label:"Manuscript + Compass",
-    kicker:"Connection 5 / Knowledge and Navigation",
-    title:"Knowledge and Navigation",
-    text:"Written knowledge and navigation technologies changed how distance was imagined. Maps, instruments and recorded experience helped travellers understand routes, risks and worlds beyond their own."
-  }
+// Each pairing represents a different form of exchange
+// along the Silk Road. Instead of presenting history as
+// a timeline, the project reveals history through
+// relationships between objects.
+
+var linkData = [
+  ["spices", "coin", "route1", "Spices + Coin", "Spices and Coin",
+   "Spices were traded along the Silk Road because they were valuable. Coins made it easier to buy and sell things in different cities."],
+  ["coin", "ceramic", "route2", "Coin + Ceramic", "Coin and Ceramic",
+   "Chinese ceramics were sold to many places. Coins show how trade worked between merchants and buyers."],
+  ["ceramic", "silk", "route3", "Ceramic + Silk", "Ceramic and Silk",
+   "Silk and pottery were both popular trade goods. They also spread styles and ideas between cultures."],
+  ["silk", "manuscript", "route4", "Silk + Manuscript", "Silk and Manuscript",
+   "Books and religious texts travelled with traders. The same routes used for silk also helped spread knowledge."],
+  ["manuscript", "compass", "route5", "Manuscript + Compass", "Manuscript and Compass",
+   "Maps and navigation tools helped people travel long distances. Written records made this knowledge easier to share."]
 ];
 
-document.querySelectorAll("img").forEach(img=>{
-  img.setAttribute("draggable","false");
-  img.addEventListener("dragstart", e => e.preventDefault());
-});
-beginBtn.addEventListener("click", () => {
-  intro.classList.add("hide");
-  initAudio();
-  tone(180,.14);
-  saveHomePositions();
-});
+// Final reflection screens.
+// The ending sequence encourages users to think about
+// the Silk Road as a network of exchange rather than
+// a single historical route.
 
-closeScroll.addEventListener("click", hideScroll);
-continueBtn.addEventListener("click", hideScroll);
+var endTxt = [
+[
+"The fragments are no longer silent.",
+"Each restored object holds a trace of movement.",
+"A spice bowl, a coin, a piece of silk, a manuscript, a compass — none of them can tell the whole story alone."
+],
 
-document.querySelectorAll(".piece,.artifact").forEach(el => {
-  el.addEventListener("pointerdown", startDrag);
-});
+[
+"When placed in relation, they begin to speak.",
+"Trade becomes more than exchange.",
+"It becomes a way for people, beliefs, techniques and ways of seeing the world to travel across distance."
+],
 
-window.addEventListener("pointermove", moveDrag);
-window.addEventListener("pointerup", endDrag);
+[
+"The Silk Road was not a single line across a map.",
+"It was built through repeated encounters.",
+"Merchants, travellers, scholars and pilgrims carried objects, but they also carried languages, memories, risks and ideas."
+],
 
-function initAudio(){
-  if(!audio){
-    audio = new (window.AudioContext || window.webkitAudioContext)();
-  }
+[
+"What has been reconstructed is not only a route.",
+"It is a network of human connection.",
+"History remains incomplete, but each fragment helps us imagine how distant worlds once touched."
+]
+];
+
+
+
+startBtn.onclick = go;
+btnClose.onclick = shutPop;
+btnOk.onclick = shutPop;
+leftArrow.onclick = back;
+rightArrow.onclick = forward;
+
+restartBtn.onclick = function () {
+  location.reload();
+};
+
+window.onpointermove = dragMove;
+window.onpointerup = dragStop;
+
+var picList = document.getElementsByTagName("img");
+for (var i = 0; i < picList.length; i++) {
+  picList[i].draggable = false;
 }
 
-function tone(freq,dur=.18){
-  if(!audio) return;
-
-  const osc = audio.createOscillator();
-  const gain = audio.createGain();
-
-  osc.type = "triangle";
-  osc.frequency.value = freq;
-
-  gain.gain.setValueAtTime(.0001,audio.currentTime);
-  gain.gain.exponentialRampToValueAtTime(.08,audio.currentTime+.02);
-  gain.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+dur);
-
-  osc.connect(gain);
-  gain.connect(audio.destination);
-
-  osc.start();
-  osc.stop(audio.currentTime+dur+.04);
+var frags = document.getElementsByClassName("frag");
+for (var k = 0; k < frags.length; k++) {
+  frags[k].onpointerdown = dragStart;
 }
 
-function chord(){
-  [220,277,330,440].forEach((f,i)=>{
-    setTimeout(()=>tone(f,.35),i*120);
-  });
+// --------------------------------------------------
+// INTRODUCTION
+// The experience begins with a simple start screen.
+// Users intentionally enter the experience before
+// interacting with historical content.
+// --------------------------------------------------
+
+function go() {
+  startPage.className = "startPage hide";
+  savePos();
 }
 
-function saveHomePositions(){
-  document.querySelectorAll(".artifact").forEach(el=>{
-    homePositions[el.id] = {
-      left:el.style.left,
-      top:el.style.top
+function savePos() {
+  var tmp = document.getElementsByClassName("mapItem");
+  for (var i = 0; i < tmp.length; i++) {
+    oldPos[tmp[i].id] = {
+      left: tmp[i].style.left,
+      top: tmp[i].style.top
     };
-  });
-}
-
-function startDrag(e){
-  const el = e.currentTarget;
-
-  if(el.classList.contains("merged")) return;
-
-  if(phase === "puzzle" && !el.classList.contains("piece")) return;
-  if(phase === "map" && !el.classList.contains("artifact")) return;
-
-  current = el;
-  current.classList.add("dragging");
-
-  const r = current.getBoundingClientRect();
-  offsetX = e.clientX - r.left;
-  offsetY = e.clientY - r.top;
-
-  current.setPointerCapture(e.pointerId);
-
-  initAudio();
-  tone(150,.08);
-}
-
-function moveDrag(e){
-  if(!current) return;
-
-  current.style.left = `${e.clientX - offsetX}px`;
-  current.style.top = `${e.clientY - offsetY}px`;
-
-  if(phase === "puzzle") highlightMatchingFragment();
-  if(phase === "map") highlightCurrentPair();
-}
-
-function endDrag(){
-  if(!current) return;
-
-  if(phase === "puzzle") tryMergeFragments();
-  if(phase === "map") tryActivateConnection();
-
-  current.classList.remove("dragging");
-
-  document.querySelectorAll(".piece,.artifact").forEach(el=>{
-    el.classList.remove("near");
-  });
-
-  current = null;
-}
-
-function center(el){
-  const r = el.getBoundingClientRect();
-  return {
-    x:r.left + r.width/2,
-    y:r.top + r.height/2
-  };
-}
-
-function distance(a,b){
-  const A = center(a);
-  const B = center(b);
-  return Math.hypot(A.x - B.x, A.y - B.y);
-}
-
-function matchingPiece(){
-  const name = current.dataset.artifact;
-  const side = current.dataset.side;
-
-  return [...document.querySelectorAll(`.piece[data-artifact="${name}"]:not(.merged)`)]
-    .find(p => p !== current && p.dataset.side !== side);
-}
-
-function highlightMatchingFragment(){
-  document.querySelectorAll(".piece").forEach(p=>{
-    p.classList.remove("near");
-  });
-
-  const other = matchingPiece();
-
-  if(other && distance(current,other) < 260){
-    current.classList.add("near");
-    other.classList.add("near");
   }
 }
 
-function tryMergeFragments(){
-  const other = matchingPiece();
+// --------------------------------------------------
+// PHASE 1: RECONSTRUCTION
+// Users rebuild fragmented artefacts before learning
+// about their historical significance.
+//
+// This interaction was inspired by archaeological
+// reconstruction, where historians work with fragments
+// rather than complete objects.
+// --------------------------------------------------
 
-  if(other && distance(current,other) < 260){
-    const name = current.dataset.artifact;
+function dragStart(e) {
+  var el = e.currentTarget;
 
-    current.classList.add("merged");
-    other.classList.add("merged");
+  if (el.className.indexOf("merged") > -1) return;
+  if (whichPart == 1 && el.className.indexOf("frag") == -1) return;
+  if (whichPart == 2 && el.className.indexOf("mapItem") == -1) return;
 
-    recoverArtifact(name);
+  thing = el;
+  thing.className = thing.className + " dragging";
 
-    tone(330,.24);
-  }else{
-    tone(105,.12);
+  var parent = thing.offsetParent || document.body;
+  var pr = parent.getBoundingClientRect();
+  var b = thing.getBoundingClientRect();
+
+  xx = e.clientX - b.left;
+  yy = e.clientY - b.top;
+
+  if (thing.className.indexOf("mapItem") > -1) {
+    thing.style.transform = "none";
+  }
+
+  thing.style.left = (b.left - pr.left) + "px";
+  thing.style.top = (b.top - pr.top) + "px";
+}
+
+function dragMove(e) {
+  if (thing == null) return;
+
+  var parent = thing.offsetParent || document.body;
+  var pr = parent.getBoundingClientRect();
+
+  thing.style.left = (e.clientX - xx - pr.left) + "px";
+  thing.style.top = (e.clientY - yy - pr.top) + "px";
+
+  if (whichPart == 1) glowPiece();
+  else glowPair();
+}
+
+function dragStop() {
+  if (thing == null) return;
+
+  if (whichPart == 1) doMerge();
+  else tryLink();
+
+  thing.className = thing.className.replace(" dragging", "");
+  thing = null;
+  removeGlow();
+}
+
+function removeGlow() {
+  var a = document.getElementsByClassName("frag");
+  for (var i = 0; i < a.length; i++) {
+    a[i].className = a[i].className.replace(" near", "");
+  }
+  var b = document.getElementsByClassName("mapItem");
+  for (var j = 0; j < b.length; j++) {
+    b[j].className = b[j].className.replace(" near", "");
   }
 }
 
-function recoverArtifact(name){
-  if(recoveredSet.has(name)) return;
-
-  recoveredSet.add(name);
-  recovered++;
-
-  const icon = document.createElement("div");
-  icon.className = "recoveredIcon";
-  icon.innerHTML = `<img src="assets/${name}.png" alt="${name}">`;
-
-  collection.appendChild(icon);
-
-  progressText.textContent = `${recovered} / 6 artifacts recovered`;
-  progressFill.style.width = `${recovered/6*100}%`;
-
-  if(recovered === 6){
-    setTimeout(startMapPhase,900);
-  }
+function dist(el1, el2) {
+  var r1 = el1.getBoundingClientRect();
+  var r2 = el2.getBoundingClientRect();
+  var x1 = r1.left + r1.width / 2;
+  var y1 = r1.top + r1.height / 2;
+  var x2 = r2.left + r2.width / 2;
+  var y2 = r2.top + r2.height / 2;
+  var d1 = x1 - x2;
+  var d2 = y1 - y2;
+  return Math.sqrt(d1 * d1 + d2 * d2);
 }
 
-function startMapPhase(){
-  phase = "map";
+function findMatch() {
+  var nm = thing.getAttribute("data-artifact");
+  var sd = thing.getAttribute("data-side");
+  var all = document.getElementsByClassName("frag");
 
-  excavation.classList.add("hide");
-  mapScene.classList.add("show");
-
-  phaseLabel.textContent = "Phase 2 / Historical Connections";
-  mainTitle.textContent = "Connect the Recovered Objects";
-
-  progressText.textContent = "0 / 5 connections activated";
-  progressFill.style.width = "0%";
-
-  instruction.innerHTML = `<strong>Step 2:</strong> Find the first connection: <b>${pairs[0].label}</b>. Drag these two artifacts together.`;
-
-  saveHomePositions();
-  chord();
-}
-
-function currentPair(){
-  return pairs[connectionIndex];
-}
-
-function highlightCurrentPair(){
-  document.querySelectorAll(".artifact").forEach(a=>{
-    a.classList.remove("near");
-  });
-
-  const pair = currentPair();
-  if(!pair) return;
-
-  if(current.dataset.name === pair.a || current.dataset.name === pair.b){
-    document.getElementById(pair.a).classList.add("near");
-    document.getElementById(pair.b).classList.add("near");
-  }
-}
-
-function tryActivateConnection(){
-  const pair = currentPair();
-  if(!pair) return;
-
-  const a = document.getElementById(pair.a);
-  const b = document.getElementById(pair.b);
-
-  const draggedName = current.dataset.name;
-  const isCorrectArtifact = draggedName === pair.a || draggedName === pair.b;
-  const isCloseEnough = distance(a,b) < 150;
-
-  if(isCorrectArtifact && isCloseEnough){
-    document.getElementById(pair.route).classList.add("active");
-
-    a.classList.add("flash");
-    b.classList.add("flash");
-
-    setTimeout(()=>{
-      a.classList.remove("flash");
-      b.classList.remove("flash");
-      returnArtifact(a);
-      returnArtifact(b);
-    },650);
-
-    scrollKicker.textContent = pair.kicker;
-    scrollTitle.textContent = pair.title;
-    scrollText.textContent = pair.text;
-    scroll.classList.add("show");
-
-    connectionIndex++;
-
-    progressText.textContent = `${connectionIndex} / 5 connections activated`;
-    progressFill.style.width = `${connectionIndex/5*100}%`;
-
-    tone(260+connectionIndex*55,.25);
-
-    if(connectionIndex === pairs.length){
-      instruction.innerHTML = `<strong>Final:</strong> All connections have been activated. The Silk Road network is complete.`;
-      setTimeout(()=>{
-        scroll.classList.remove("show");
-        playEnding();
-      },1800);
-    }else{
-      instruction.innerHTML = `<strong>Step 2:</strong> Connection activated. Next, find: <b>${pairs[connectionIndex].label}</b>.`;
+  for (var i = 0; i < all.length; i++) {
+    if (all[i].getAttribute("data-artifact") == nm &&
+        all[i].getAttribute("data-side") != sd &&
+        all[i].className.indexOf("merged") == -1 &&
+        all[i] != thing) {
+      return all[i];
     }
-  }else{
-    tone(105,.12);
-    instruction.innerHTML = `<strong>Hint:</strong> Current connection is <b>${pair.label}</b>. Drag these two artifacts close together.`;
+  }
+  return null;
+}
+
+function glowPiece() {
+  removeGlow();
+  var other = findMatch();
+  if (other != null && dist(thing, other) < 260) {
+    thing.className = thing.className + " near";
+    other.className = other.className + " near";
   }
 }
 
-function returnArtifact(el){
-  const home = homePositions[el.id];
-  if(!home) return;
+// Successful reconstruction provides immediate feedback.
+// Completing an object helps users understand that they
+// have restored a piece of historical evidence.
 
-  el.classList.add("returning");
-  el.style.left = home.left;
-  el.style.top = home.top;
-
-  setTimeout(()=>{
-    el.classList.remove("returning");
-  },700);
-}
-
-function hideScroll(){
-  scroll.classList.remove("show");
-
-  if(phase === "map" && connectionIndex < pairs.length){
-    instruction.innerHTML = `<strong>Step 2:</strong> Find the connection: <b>${pairs[connectionIndex].label}</b>. Drag these two artifacts together.`;
+function doMerge() {
+  var other = findMatch();
+  if (other != null && dist(thing, other) < 260) {
+    var nm = thing.getAttribute("data-artifact");
+    thing.className = thing.className + " merged";
+    other.className = other.className + " merged";
+    addGot(nm);
   }
 }
 
-function playEnding(){
-  final.classList.add("show");
-  mapScene.classList.add("ending");
-  chord();
+function addGot(name) {
+  for (var i = 0; i < got.length; i++) {
+    if (got[i] == name) return;
+  }
 
-  const scenes = [
-    {
-      small:"The objects have been restored.",
-      title:"But the Silk Road was never only about objects.",
-      body:"Every fragment carried more than material value. It carried labour, memory, belief and distance."
-    },
-    {
-      small:"Across deserts, mountains and seas...",
-      title:"Merchants carried spices. Pilgrims carried beliefs.",
-      body:"Scholars carried manuscripts. Travellers carried stories. Technologies moved with people, and people moved with hope, risk and desire."
-    },
-    {
-      small:"Economic exchange became cultural exchange.",
-      title:"Goods travelled. Ideas travelled. History travelled.",
-      body:"Silk, ceramics, coins, texts and instruments formed a network that connected China, Central Asia, Persia, the Mediterranean and beyond."
-    },
-    {
-      small:"The network is fully illuminated.",
-      title:"The Silk Road was not a single road.",
-      body:"It was a living system of trade, culture, belief, knowledge and technology — reconstructed here through touch."
+  got.push(name);
+  num = num + 1;
+
+  var d = document.createElement("div");
+  d.className = "gotIcon";
+  d.innerHTML = "<img src='assets/" + name + ".png'>";
+  tray.appendChild(d);
+
+  progTxt.innerHTML = num + " / 6 done";
+  bar.style.width = (num / 6 * 100) + "%";
+
+  if (num == 6) {
+    setTimeout(part2, 800);
+  }
+}
+
+// --------------------------------------------------
+// PHASE 2: HISTORICAL CONNECTIONS
+// The focus shifts from individual artefacts to
+// relationships between artefacts.
+//
+// Users discover different forms of exchange through
+// drag-based connections.
+// --------------------------------------------------
+
+function part2() {
+  whichPart = 2;
+  dig.className = "digArea hide";
+  theMap.className = "mapBox show";
+
+  lblPart.innerHTML = "PHASE 2 / HISTORICAL CONNECTIONS";
+  h2title.innerHTML = "Connect the Recovered Objects";
+  progTxt.innerHTML = "0 / 5 connections activated";
+  bar.style.width = "0%";
+  hint.innerHTML = "Step 2: Find the first connection: " + linkData[0][3] + ". Drag these two artifacts together.";
+
+  savePos();
+
+  var items = document.getElementsByClassName("mapItem");
+  for (var i = 0; i < items.length; i++) {
+    items[i].onpointerdown = dragStart;
+  }
+}
+
+function glowPair() {
+  removeGlow();
+  if (n >= linkData.length) return;
+
+  var aa = linkData[n][0];
+  var bb = linkData[n][1];
+  var nm = thing.getAttribute("data-name");
+
+  if (nm == aa || nm == bb) {
+    document.getElementById(aa).className = document.getElementById(aa).className + " near";
+    document.getElementById(bb).className = document.getElementById(bb).className + " near";
+  }
+}
+
+// Each successful connection reveals a historical
+// relationship. Information is unlocked through
+// interaction rather than being presented immediately.
+
+function tryLink() {
+  if (n >= linkData.length) return;
+
+  var aa = linkData[n][0];
+  var bb = linkData[n][1];
+  var rt = linkData[n][2];
+  var lb = linkData[n][3];
+  var hd = linkData[n][4];
+  var tx = linkData[n][5];
+
+  var el1 = document.getElementById(aa);
+  var el2 = document.getElementById(bb);
+  var nm = thing.getAttribute("data-name");
+
+  if ((nm == aa || nm == bb) && dist(el1, el2) < 150) {
+    lightRoute(rt);
+
+    el1.className = el1.className + " flash";
+    el2.className = el2.className + " flash";
+
+    setTimeout(function () {
+      el1.className = el1.className.replace(" flash", "");
+      el2.className = el2.className.replace(" flash", "");
+      goHome(el1);
+      goHome(el2);
+    }, 500);
+
+    popSub.innerHTML = "Connection " + (n + 1);
+    popHead.innerHTML = hd;
+    popMsg.innerHTML = tx;
+    popup.className = "popup show";
+
+    n = n + 1;
+    progTxt.innerHTML = n + " / 5 connected";
+    bar.style.width = (n / 5 * 100) + "%";
+
+    if (n == linkData.length) {
+      hint.innerHTML = "All connections done.";
+      setTimeout(function () {
+        popup.className = "popup";
+        endGame();
+      }, 1500);
+    } else {
+      hint.innerHTML = "Next: " + linkData[n][3];
     }
-  ];
+  } else {
+    hint.innerHTML = "Try connecting " + lb;
+  }
+}
 
-  let i = 0;
+// Illuminated routes provide visual feedback and
+// gradually reveal the Silk Road as an interconnected
+// network of movement and exchange.
 
-  function showScene(){
-    if(i >= scenes.length){
-      finalTag.textContent = "Reconstructed through touch.";
-      return;
-    }
+function lightRoute(id) {
+  var path = document.getElementById(id);
+  if (path) path.classList.add("active");
+}
 
-    finalSmall.classList.add("fadeOut");
-    finalTitle.classList.add("fadeOut");
-    finalBody.classList.add("fadeOut");
+function goHome(el) {
+  if (!oldPos[el.id]) return;
 
-    setTimeout(()=>{
-      finalSmall.textContent = scenes[i].small;
-      finalTitle.textContent = scenes[i].title;
-      finalBody.textContent = scenes[i].body;
+  el.className = el.className + " returning";
+  el.style.left = oldPos[el.id].left;
+  el.style.top = oldPos[el.id].top;
 
-      finalSmall.classList.remove("fadeOut");
-      finalTitle.classList.remove("fadeOut");
-      finalBody.classList.remove("fadeOut");
-
-      i++;
-      setTimeout(showScene,5200);
-    },650);
+  if (el.className.indexOf("mapItem") > -1) {
+    el.style.transform = "translate(-50%, -50%)";
   }
 
-  showScene();
+  setTimeout(function () {
+    el.className = el.className.replace(" returning", "");
+  }, 600);
+}
+
+function shutPop() {
+  popup.className = "popup";
+  if (whichPart == 2 && n < linkData.length) {
+    hint.innerHTML = "Connect: " + linkData[n][3];
+  }
+}
+
+// --------------------------------------------------
+// FINAL REFLECTION
+// After reconstructing artefacts and connections,
+// users are encouraged to reflect on the Silk Road
+// as a complex system of cultural, economic and
+// technological exchange.
+// --------------------------------------------------
+
+function endGame() {
+  endDiv.className = "endscreen show";
+  chSlide(0);
+}
+
+// The final slides connect individual objects
+// to the larger Silk Road network and encourage reflection.
+
+function chSlide(x) {
+  if (x < 0 || x >= endTxt.length) return;
+
+  s = x;
+  t1.innerHTML = endTxt[s][0];
+  t2.innerHTML = endTxt[s][1];
+  t3.innerHTML = endTxt[s][2];
+
+  if (s == endTxt.length - 1) {
+    t4.innerHTML = "Thanks for playing";
+  } else {
+    t4.innerHTML = (s + 1) + " / " + endTxt.length;
+  }
+
+  leftArrow.disabled = (s == 0);
+  rightArrow.disabled = (s == endTxt.length - 1);
+}
+
+function back() {
+  chSlide(s - 1);
+}
+
+function forward() {
+  chSlide(s + 1);
 }
